@@ -1,0 +1,22 @@
+<div class="wishlist-container">
+
+  <div *ngIf="wishlistItems.length === 0" class="empty-wishlist">
+    <fa-icon [icon]="faHeartBroken" class="broken-heart"></fa-icon>
+    <p>No Movies in your watch list</p>
+    <a routerLink="/" class="back-btn">Back to Movies</a>
+  </div>
+
+  <div *ngIf="wishlistItems.length > 0" class="movie-grid">
+    <div *ngFor="let item of wishlistItems" class="movie-card">
+      <div class="poster">
+        <img [src]="'https://image.tmdb.org/t/p/w500/' + item.poster_path" [alt]="item.title">
+        <button (click)="remove(item.id)" class="remove-btn">
+          <fa-icon [icon]="faTimes"></fa-icon>
+        </button>
+      </div>
+      <h3>{{ item.title }}</h3>
+      <p class="overview">{{ item.overview | slice:0:100 }}...</p>
+      <a [routerLink]="['/movie', item.id]" class="details-btn">View Details</a>
+    </div>
+  </div>
+</div>
