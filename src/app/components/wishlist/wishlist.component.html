@@ -1,24 +1,56 @@
 <div class="wishlist-container">
 
+  <div class="back-header">
+    <button routerLink="/" class="back-to-movies">
+      <fa-icon [icon]="faArrowLeft"></fa-icon> Back to Movies
+    </button>
+  </div>
+
+
   <div *ngIf="wishlistItems.length === 0" class="empty-wishlist">
     <fa-icon [icon]="faHeartBroken" class="broken-heart"></fa-icon>
-    <p>No Movies in your watch list</p>
-    <a routerLink="/" class="back-btn">Back to Movies</a>
+    <p>Your watchlist is empty</p>
   </div>
+
 
   <div *ngIf="wishlistItems.length > 0" class="movie-grid">
     <div *ngFor="let item of wishlistItems" class="movie-card">
       <div class="poster">
-        <img [src]="'https://image.tmdb.org/t/p/w500/' + item.poster_path" [alt]="item.title">
-        <button (click)="remove(item.id)" class="remove-btn">
+        <img [src]="getPosterUrl(item.poster_path)" 
+             [alt]="item.title"
+             (error)="handleImageError($event)">
+        <button (click)="remove(item.id)" class="remove-btn" title="Remove from watchlist">
           <fa-icon [icon]="faTimes"></fa-icon>
         </button>
+        <button (click)="toggle(item)" class="heart-btn" title="Remove from watchlist">
+          <fa-icon [icon]="fasHeart"></fa-icon>
+        </button>
       </div>
-      <h3>{{ item.title }}</h3>
       
-      <!-- <p class="overview">{{ item.overview | slice:0:100 }}...</p> -->
-      <a [routerLink]="['/movie', item.id]" class="details-btn">View Details</a>
+      <div class="movie-info">
+        <h3>{{ item.title }}</h3>
+        
+        <div class="movie-meta">
+          <div class="meta-item">
+            <fa-icon [icon]="faCalendar"></fa-icon>
+            <span>{{ item.release_date | date:'yyyy' }}</span>
+          </div>
+          
+          <div class="meta-item">
+            <fa-icon [icon]="faStar"></fa-icon>
+            <span>{{ item.vote_average | number:'1.1-1' }}</span>
+          </div>
+          
+          <div class="meta-item" *ngIf="item.runtime">
+            <fa-icon [icon]="faClock"></fa-icon>
+            <span>{{ item.runtime }} min</span>
+          </div>
+        </div>
+        
+        <div class="overview-container" *ngIf="item.overview">
+          <p class="overview">{{ item.overview }}</p>
+        </div>
+      </div>
     </div>
   </div>
-  
 </div>
