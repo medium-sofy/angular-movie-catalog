@@ -1,0 +1,25 @@
+<nav class="navbar">
+  <div class="container">
+    <span class="logo">MovieApp</span>
+
+    <div class="nav-links">
+      <a routerLink="/" 
+         routerLinkActive="active" 
+         [routerLinkActiveOptions]="{exact: true}" 
+         class="nav-link">
+        <fa-icon [icon]="faFilm"></fa-icon>
+        <span>Movies</span>
+      </a>
+      <a routerLink="/wishlist" 
+         routerLinkActive="active" 
+         class="nav-link">
+        <fa-icon [icon]="faHeart"></fa-icon>
+        <span>Wishlist</span>
+      </a>
+    </div>
+
+    <div class="nav-controls">
+      <app-wishlist-counter></app-wishlist-counter>
+    </div>
+  </div>
+</nav>

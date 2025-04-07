@@ -1,13 +1,13 @@
 <div class="home-container">
 
     <!-- Navigation Bar -->
-    <nav class="navbar">
-        <h1 class="navbar-title">Movie App</h1>
-        <ul class="navbar-links">
-            <li><a routerLink="/" routerLinkActive="active">Home</a></li>
-            <li><a routerLink="/watchlist" routerLinkActive="active">Watchlist</a></li>
-        </ul>
-    </nav>
+    <!-- <nav class="navbar">
+      <h1 class="navbar-title">Movie App</h1>
+      <ul class="navbar-links">
+          <li><a routerLink="/" routerLinkActive="active">Home</a></li>
+          <li><a routerLink="/wishlist" routerLinkActive="active">Watchlist</a></li>
+      </ul>
+  </nav> -->
 
     <h1>Popular Movies</h1>
 
@@ -55,8 +55,7 @@
                 (click)="toggleWatchlist(movie)"
                 aria-label="Add to watchlist"
             >
-                <span class="star-icon" [class.active]="movie.inWatchlist">&#9733;</span>
-            </button>
+            <span class="star-icon" [class.active]="isInWishlist(movie.id)">&#9733;</span>            </button>
         </a>
     </div>
 

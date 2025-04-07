@@ -6,6 +6,11 @@ import { Movie } from '../../models/movie.model';
 import { MovieService } from '../../services/movie.service';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
+import { WishlistService } from '../../services/wishlist.service';
+// import { FaIconLibrary, FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+// import { faHeart as faHeartSolid } from '@fortawesome/free-solid-svg-icons';
+// import { faHeart as faHeartRegular } from '@fortawesome/free-regular-svg-icons';
+
 
 @Component({
   selector: 'app-home',
@@ -22,9 +27,13 @@ export class HomeComponent implements OnInit, OnDestroy {
   error: string | null = null;
   searchQuery: string = '';
 
+
+
   private movieSubscription: Subscription | undefined;
 
-  constructor(private movieService: MovieService) {}
+  constructor(private movieService: MovieService,
+  public wishlistService: WishlistService // <-- Add this line
+  ){}
 
   ngOnInit(): void {
     this.loadMovies(this.currentPage);
@@ -99,11 +108,10 @@ onSearch(): void {
 }
 
 toggleWatchlist(movie: Movie): void {
-  movie.inWatchlist = !movie.inWatchlist; // Toggle the watchlist status
-  // TODO: Add logic here to PERSIST this change!
-   // e.g., save the movie ID and its watchlist status to localStorage
-   // or call a backend service. This toggle is currently only in memory
-   // and will be lost on page reload or component re-initialization.                                                             
-  console.log(`${movie.title} has been ${movie.inWatchlist ? 'added to' : 'removed from'} the watchlist.`);
+  this.wishlistService.toggleWishlist(movie);
+  movie.inWatchlist = this.wishlistService.isInWishlist(movie.id); 
+}
+isInWishlist(id: number): boolean {
+  return this.wishlistService.isInWishlist(id);
 }
 }
