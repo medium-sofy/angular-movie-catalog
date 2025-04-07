@@ -7,14 +7,14 @@ import { Movie } from '../models/movie.model';
 import { ApiResponse } from '../models/api-response.model';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class MovieService {
   private apiUrl = environment.tmdb.apiUrl;
   private apiKey = environment.tmdb.apiKey;
   private imgBaseUrl = environment.tmdb.imgUrl;
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient) {}
 
   /**
    * Gets a list of popular movies (or discover) from TMDB API with pagination.
@@ -49,5 +49,13 @@ export class MovieService {
       return null; // Or '/assets/images/placeholder.png';
     }
     return `<span class="math-inline">\{this\.imgBaseUrl\}</span>{posterPath}`;
+  }
+
+  getMovieDetails(id: number) {
+    const url = `${this.apiUrl}/movie/${id}`;
+    const params = new HttpParams()
+      .set('api_key', this.apiKey)
+      .set('language', 'en-US');
+    return this.http.get(url, { params });
   }
 }
