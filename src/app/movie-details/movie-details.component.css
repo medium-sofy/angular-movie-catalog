@@ -1,0 +1,157 @@
+/* Import Bootstrap Icons if you haven't already (e.g., in styles.css or angular.json) */
+/* @import url("https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css"); */
+
+:host {
+  /* Re-declare variables if needed, or ensure they are globally available */
+  --primary-color: #0d6efd;
+  --secondary-color: #6c757d;
+  --light-grey: #f8f9fa;
+  --dark-grey: #343a40;
+  --text-color: #212529;
+  --card-bg: #ffffff;
+  --card-border: #dee2e6;
+  --card-shadow: rgba(0, 0, 0, 0.075);
+  --hover-shadow: rgba(0, 0, 0, 0.125);
+  --star-inactive: #ccc;
+  --star-active: gold;
+  --star-hover: #ffdd57;
+}
+
+.movie-details-container {
+  background-color: var(--light-grey); /* Match home background */
+  color: var(--text-color);
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif; /* Match home font */
+  padding-top: 20px; /* Add some space from the top */
+  padding-bottom: 40px;
+}
+
+.movie-details-poster {
+  max-width: 100%; /* Ensure image is responsive */
+  height: auto;
+  object-fit: cover; /* Cover ensures aspect ratio maintained */
+  border: 1px solid var(--card-border); /* Subtle border */
+  box-shadow: 0 4px 12px var(--card-shadow); /* Consistent shadow */
+  background-color: #e9ecef; /* Placeholder bg */
+}
+
+img[src$="placeholder.png"].movie-details-poster {
+  object-fit: contain; /* Contain for placeholder */
+  background-color: #f8f9fa;
+}
+
+.movie-details-title {
+  font-size: 2.5rem; /* Larger title for detail page */
+  font-weight: 700;
+  color: var(--dark-grey); /* Darker title */
+  line-height: 1.2;
+}
+
+.movie-details-tagline {
+  font-size: 1.1rem;
+  color: var(--secondary-color);
+  margin-bottom: 1.5rem;
+}
+
+.movie-meta-info {
+  font-size: 0.95rem;
+  color: var(--secondary-color);
+  gap: 0.5rem; /* Spacing between items */
+}
+
+.movie-meta-info strong {
+  color: var(--text-color); /* Make numbers stand out slightly */
+}
+
+.movie-meta-info i { /* Style for Bootstrap Icons */
+    font-size: 1rem;
+    vertical-align: middle;
+    margin-bottom: 2px; /* Adjust alignment */
+}
+
+.movie-details-section .section-title {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: var(--dark-grey);
+  border-bottom: 2px solid var(--primary-color); /* Accent line */
+  padding-bottom: 0.4rem;
+  margin-bottom: 1rem;
+  display: inline-block; /* Keep border only under text */
+}
+
+.movie-details-overview {
+  font-size: 1rem;
+  line-height: 1.6;
+  color: var(--text-color);
+}
+
+.genre-badge {
+  background-color: var(--secondary-color) !important; /* Override bootstrap default if needed */
+  color: white !important;
+  font-size: 0.85rem;
+  padding: 0.4em 0.8em;
+  font-weight: 500;
+}
+
+.genre-badge:hover {
+  opacity: 0.9;
+}
+
+.company-list li {
+  padding: 2px 0;
+  color: var(--secondary-color);
+}
+
+.movie-website-link {
+  color: var(--primary-color);
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+
+.movie-website-link:hover {
+  color: var(--dark-grey);
+  text-decoration: underline;
+}
+
+/* Reuse loading/error styles from home or define similar ones */
+.loading-indicator, .error-message, .no-movies-message {
+  text-align: center;
+  padding: 60px 20px;
+  font-size: 1.25em;
+  color: var(--secondary-color);
+}
+
+.error-message {
+  color: #dc3545;
+  font-weight: 500;
+}
+
+/* Optional Watchlist Button styling */
+/* .watchlist-button-detail { */
+  /* Style similar to home or use Bootstrap button classes */
+  /* Add styles for the star icon within this specific button if needed */
+/* } */
+
+/* .watchlist-button-detail .star-icon { */
+    /* Reuse star styles */
+/* } */
+
+
+/* Responsive Adjustments */
+@media (max-width: 767.98px) {
+  .movie-details-title {
+    font-size: 2rem;
+    text-align: center;
+    margin-top: 1.5rem; /* Add space below centered poster */
+  }
+  .movie-details-tagline {
+      text-align: center;
+  }
+  .movie-meta-info {
+      justify-content: center; /* Center meta items on small screens */
+      font-size: 0.9rem;
+  }
+  .movie-details-section .section-title {
+      font-size: 1.2rem;
+  }
+}

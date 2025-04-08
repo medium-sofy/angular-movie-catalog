@@ -1,1 +1,87 @@
-<p>movie-details works!</p>
+<!-- <div class="movie-details-container container my-4" @if="movie">
+  <div class="row g-4">
+    <div class="col-md-4 text-center text-md-start">
+      <img
+        [src]="movie.poster_path ? getPosterUrl(movie.poster_path) : 'assets/images/placeholder.png'"
+        [alt]="movie.title ? movie.title + ' Poster' : 'Movie Poster'"
+        class="img-fluid movie-details-poster rounded shadow-sm"
+        loading="lazy"
+      />
+    </div>
+
+    <div class="col-md-8">
+      <h1 class="movie-details-title mb-2">{{ movie.title || 'Untitled Movie' }}</h1>
+      <p class="text-muted fst-italic movie-details-tagline" @if="movie.tagline">{{ movie.tagline }}</p>
+
+      <div class="d-flex flex-wrap align-items-center movie-meta-info mb-3">
+        <span class="me-3" title="Rating">
+          <i class="bi bi-star-fill text-warning me-1"></i> <strong>{{ movie.vote_average | number:'1.1-1' }}</strong> / 10
+          <span class="text-muted ms-1">({{ movie.vote_count }} votes)</span>
+        </span>
+
+        <span class="me-3" title="Release Date">
+          <i class="bi bi-calendar3 me-1 text-secondary"></i> {{ movie.release_date | date:'longDate' }}
+        </span>
+
+        <span class="me-3" title="Duration" @if="movie.runtime">
+          <i class="bi bi-clock me-1 text-secondary"></i> {{ movie.runtime | durationFormat }}
+        </span>
+      </div>
+
+      <div class="movie-details-section mb-4" @if="movie.overview">
+        <h5 class="section-title">Overview</h5>
+        <p class="movie-details-overview">{{ movie.overview }}</p>
+      </div>
+
+      <div class="movie-details-section mb-4" @if="movie.genres && movie.genres.length > 0">
+        <h5 class="section-title">Genres</h5>
+        @for (genre of movie.genres; track genre.id) {
+          <span class="badge genre-badge me-2 mb-2">{{ genre.name }}</span>
+        }
+      </div>
+
+      <div class="movie-details-section mb-4" @if="movie.spoken_languages && movie.spoken_languages.length > 0">
+        <h5 class="section-title">Spoken Languages</h5>
+        <p class="mb-0">
+          {{getLanguagesList(movie.spoken_languages)}}
+        </p>
+      </div>
+
+      <div class="movie-details-section mb-4" @if="movie.production_companies && movie.production_companies.length > 0">
+        <h5 class="section-title">Production Companies</h5>
+        <ul class="list-unstyled mb-0 company-list">
+          @for (company of movie.production_companies; track company.id) {
+            <li>{{ company.name }}</li>
+          }
+        </ul>
+      </div>
+
+      <div class="movie-details-section mb-4" @if="movie.homepage">
+        <h5 class="section-title">Website</h5>
+        <a [href]="movie.homepage" target="_blank" rel="noopener noreferrer" class="movie-website-link">
+          Visit Movie Homepage <i class="bi bi-box-arrow-up-right ms-1"></i>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+@if (loading && !movie) {
+  <div class="loading-indicator">
+    Loading movie details...
+  </div>
+}
+
+@if (error && !loading) {
+  <div class="error-message">
+    {{ error }}
+  </div>
+}
+
+@if (!loading && !error && !movie) {
+  <div class="no-movies-message">
+    Movie details could not be loaded or found.
+  </div>
+} -->
+
+{{movie}}

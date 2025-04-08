@@ -9,16 +9,25 @@ import { MovieService } from '../services/movie.service';
   styleUrl: './movie-details.component.css'
 })
 export class MovieDetailsComponent {
-private movieId!: number;
-private movie!: any;
+   movieId!: number;
+   movie!: any;
 
-constructor(private movieService: MovieService, private route: ActivatedRoute) {}
-
-ngOnInit(): void {
-  this.movieId = Number(this.route.snapshot.paramMap.get('id'));
-  this.movieService.getMovieDetails(this.movieId).subscribe((movie : any) => {
-    this.movie = movie;
-    console.log(this.movie);
-  });
-}
+  constructor(private movieService: MovieService, private route: ActivatedRoute) { }
+  getPosterUrl(path:string): string {
+    return `https://image.tmdb.org/t/p/w500/${path}`;
+  }
+  ngOnInit() {
+    this.movieId = Number(this.route.snapshot.paramMap.get('id'));
+    this.movieService.getMovieDetails(this.movieId).subscribe((movie: any) => {
+      this.movie = movie;
+      console.log(this.movie);
+    });
+  }
+  
+  getLanguagesList(languages: any[]): string {
+    if (!languages || languages.length === 0) {
+      return '';
+    }
+    return languages.map(lang => lang.english_name || lang.name).join(', ');
+  }
 }

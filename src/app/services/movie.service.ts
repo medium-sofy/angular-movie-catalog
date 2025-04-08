@@ -58,4 +58,12 @@ export class MovieService {
       .set('language', 'en-US');
     return this.http.get(url, { params });
   }
+  
+  getMovieRecommendations(id: number) {
+    const url = `${this.apiUrl}/movie/${id}/recommendations`;
+    const params = new HttpParams()
+      .set('api_key', this.apiKey)
+      .set('language', 'en-US');
+    return this.http.get(url, { params });
+  }
 }
