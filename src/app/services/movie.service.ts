@@ -65,4 +65,13 @@ export class MovieService {
       .set('language', 'en-US');
     return this.http.get(url, { params });
   }
+  
+  getMovieReviews(id: number): Observable<any> {
+    const url = `${this.apiUrl}/movie/${id}/reviews`;
+    const params = new HttpParams()
+      .set('api_key', this.apiKey)
+      .set('language', 'en-US')
+    
+    return this.http.get(url, { params });
+  }
 }

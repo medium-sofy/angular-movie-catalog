@@ -232,6 +232,84 @@
   </div>
 }
 
+<!-- User Reviews Section -->
+@if (!reviewsLoading && reviews.length > 0) {
+  <div class="reviews-section container">
+    <h3 class="section-title">User Reviews ({{ reviews.length }})</h3>
+    
+    <div class="reviews-container">
+      <!-- Individual reviews -->
+      @for (review of displayedReviews; track review.id) {
+        <div class="review-card">
+          <div class="review-header">
+            <div class="reviewer-info">
+              <img [src]="getAvatarUrl(review)" 
+                  [alt]="formatAuthorName(review)" 
+                  class="reviewer-avatar"
+                  (error)="handleImageError($event)">
+              <div class="reviewer-details">
+                <h4 class="reviewer-name">{{ formatAuthorName(review) }}</h4>
+                <span class="review-date">{{ formatReviewDate(review.created_at) }}</span>
+              </div>
+            </div>
+            
+            @if (review.author_details && review.author_details.rating) {
+              <div class="review-rating">
+                <span class="rating-value" [style.color]="getRatingColor(review.author_details.rating)">
+                  {{ review.author_details.rating }}/10
+                </span>
+              </div>
+            }
+          </div>
+          
+          <div class="review-content">
+            <p class="review-text" [class.expanded]="review.expanded">
+              {{ review.expanded ? review.content : review.content_preview }}
+            </p>
+            
+            @if (review.content.length > 300) {
+              <button class="read-more-btn" (click)="toggleReviewExpansion(review)">
+                {{ review.expanded ? 'Read Less' : 'Read More' }}
+              </button>
+            }
+          </div>
+        </div>
+      }
+    </div>
+    
+    <!-- Show more/less reviews button -->
+    @if (reviews.length > maxReviewsInitial) {
+      <div class="reviews-toggle">
+        <button class="btn btn-outline-primary" (click)="toggleReviews()">
+          {{ showAllReviews ? 'Show Less Reviews' : 'Show All Reviews' }}
+        </button>
+      </div>
+    }
+  </div>
+}
+
+<!-- Reviews loading state -->
+@if (reviewsLoading) {
+  <div class="reviews-loading container">
+    <p>Loading reviews...</p>
+  </div>
+}
+
+<!-- No reviews message -->
+@if (!reviewsLoading && reviews.length === 0 && !reviewsError) {
+  <div class="no-reviews-message container">
+    <p>No reviews available for this movie.</p>
+  </div>
+}
+
+<!-- Reviews error state -->
+@if (!reviewsLoading && reviewsError) {
+  <div class="reviews-error container">
+    <p>{{ reviewsError }}</p>
+  </div>
+}
+
+
 <!-- Recommended Movies Section -->
   
 <div class="container mt-5">

@@ -18,6 +18,13 @@ export class MovieDetailsComponent implements OnInit {
   loading = true;
   recommendationsLoading = false;
   error = '';
+  
+  reviews: any[] = [];
+  displayedReviews: any[] = [];
+  reviewsLoading = false;
+  reviewsError = '';
+  showAllReviews = false;
+  maxReviewsInitial = 2; // Initial number of reviews to show
 
   constructor(
     private route: ActivatedRoute,
@@ -31,6 +38,7 @@ export class MovieDetailsComponent implements OnInit {
       if (movieId) {
         this.getMovieDetails(movieId);
         this.getRecommendedMovies(movieId);
+        this.getMovieReviews(movieId);
       }
     });
   }
@@ -119,4 +127,121 @@ export class MovieDetailsComponent implements OnInit {
   goToHomePage(): void {
     this.router.navigate(['/']);
   }
+  
+  /**
+   * Fetches movie reviews from the API
+   */
+  getMovieReviews(id: number): void {
+    this.reviewsLoading = true;
+    this.reviewsError = '';
+    
+    this.movieService.getMovieReviews(id).subscribe({
+      next: (response: any) => {
+        this.reviews = response.results || [];
+        // Format the reviews to make them more presentable
+        this.reviews = this.reviews.map(review => ({
+          ...review,
+          created_at: new Date(review.created_at),
+          // Truncate content for preview if it's too long
+          content_preview: review.content.length > 300 ? 
+            review.content.substring(0, 300) + '...' : 
+            review.content,
+          expanded: false
+        }));
+        
+        // Set initial displayed reviews
+        this.updateDisplayedReviews();
+        this.reviewsLoading = false;
+      },
+      error: (err) => {
+        this.reviewsError = 'Failed to load reviews';
+        this.reviewsLoading = false;
+        console.error('Error loading reviews:', err);
+      }
+    });
+  }
+  
+  /**
+   * Updates the displayed reviews based on showAllReviews flag
+   */
+  updateDisplayedReviews(): void {
+    if (this.showAllReviews) {
+      this.displayedReviews = this.reviews;
+    } else {
+      this.displayedReviews = this.reviews.slice(0, this.maxReviewsInitial);
+    }
+  }
+  
+  /**
+   * Toggles between showing all reviews or just initial ones
+   */
+  toggleReviews(): void {
+    this.showAllReviews = !this.showAllReviews;
+    this.updateDisplayedReviews();
+  }
+  
+  /**
+   * Toggles expansion state of a single review
+   */
+  toggleReviewExpansion(review: any): void {
+    review.expanded = !review.expanded;
+  }
+  
+  /**
+   * Formats author name for display (handles missing names)
+   */
+  formatAuthorName(review: any): string {
+    if (review.author_details && review.author_details.name && review.author_details.name.trim()) {
+      return review.author_details.name;
+    }
+    return review.author || 'Anonymous';
+  }
+  
+  /**
+   * Formats review date for display
+   */
+  formatReviewDate(date: Date): string {
+    const now = new Date();
+    const diffMs = now.getTime() - date.getTime();
+    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+    
+    if (diffDays < 1) {
+      return 'Today';
+    } else if (diffDays === 1) {
+      return 'Yesterday';
+    } else if (diffDays < 7) {
+      return `${diffDays} days ago`;
+    } else if (diffDays < 30) {
+      return `${Math.floor(diffDays / 7)} weeks ago`;
+    } else if (diffDays < 365) {
+      return `${Math.floor(diffDays / 30)} months ago`;
+    } else {
+      return `${Math.floor(diffDays / 365)} years ago`;
+    }
+  }
+  
+  /**
+   * Gets the rating color based on score
+   */
+  getRatingColor(rating: number): string {
+    if (!rating && rating !== 0) return 'var(--secondary-color)';
+    if (rating >= 7) return '#2ecc71'; // green
+    if (rating >= 5) return '#f39c12'; // orange
+    return '#e74c3c'; // red
+  }
+  
+  /**
+   * Gets avatar URL for the review author or a default
+   */
+  getAvatarUrl(review: any): string {
+    if (review.author_details && review.author_details.avatar_path) {
+      // Check if it's already a full URL (sometimes TMDb returns external URLs)
+      if (review.author_details.avatar_path.startsWith('/http')) {
+        return review.author_details.avatar_path.substring(1);
+      }
+      return `https://image.tmdb.org/t/p/w100${review.author_details.avatar_path}`;
+    }
+    return 'assets/images/user-placeholder.png'; // Default avatar
+  }
+  
 }
