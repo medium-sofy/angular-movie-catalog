@@ -231,3 +231,37 @@
     Movie details could not be loaded or found.
   </div>
 }
+
+<!-- Recommended Movies Section -->
+  
+<div class="container mt-5">
+  @if(recommendationsLoading)
+  {
+  <div class="text-center">
+    <p>Loading recommendations...</p>
+  </div>
+  }
+  
+  @if (recommendedMovies && recommendedMovies.length > 0) {
+    <div class="recommended-movies-section">
+      <div class="container">
+        <h3 class="section-title">You May Also Like</h3>
+        <div class="recommended-movies-grid">
+          @for (movie of recommendedMovies; track movie.id) {
+            <app-movie-card 
+              [movie]="movie" 
+              (watchlistToggle)="toggleWatchlist($event)">
+            </app-movie-card>
+          }
+        </div>
+      </div>
+    </div>
+    <!-- Debug info - remove in production -->
+      <!-- @if (!recommendationsLoading && (!recommendedMovies || recommendedMovies.length === 0)
+      {
+      <div class="alert alert-info">
+        No recommendations available for this movie.
+      </div>
+      } -->
+}
+</div>

@@ -43,13 +43,12 @@ export class MovieService {
    * @param posterPath The poster_path from the API response.
    * @returns Full URL string or a placeholder/null if no path.
    */
-  getMoviePosterUrl(posterPath: string | null): string | null {
-    if (!posterPath) {
-      // Return a path to a placeholder image or null
-      return null; // Or '/assets/images/placeholder.png';
+   getMoviePosterUrl(posterPath: string | null): string {
+      if (!posterPath) {
+        return 'assets/images/placeholder.png';
+      }
+      return `${this.imgBaseUrl}${posterPath}`;
     }
-    return `<span class="math-inline">\{this\.imgBaseUrl\}</span>{posterPath}`;
-  }
 
   getMovieDetails(id: number) {
     const url = `${this.apiUrl}/movie/${id}`;

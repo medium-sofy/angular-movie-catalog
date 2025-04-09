@@ -2,23 +2,27 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, RouterLink, Router } from '@angular/router';
 import { DatePipe, DecimalPipe } from '@angular/common';
 import { MovieService } from '../../services/movie.service';
+import { MovieCardComponent } from '../movie-card/movie-card.component';
 
 @Component({
   selector: 'app-movie-details',
   templateUrl: './movie-details.component.html',
+  imports: [MovieCardComponent],
   styleUrls: ['./movie-details.component.css'],
   // Include the necessary pipes as providers
   providers: [DatePipe, DecimalPipe, RouterLink],
 })
 export class MovieDetailsComponent implements OnInit {
   movie: any;
+  recommendedMovies: any[] = [];
   loading = true;
+  recommendationsLoading = false;
   error = '';
 
   constructor(
     private route: ActivatedRoute,
     private movieService: MovieService,
-    private router: Router
+    private router: Router,
   ) {}
 
   ngOnInit(): void {
@@ -26,10 +30,11 @@ export class MovieDetailsComponent implements OnInit {
       const movieId = Number(params.get('id'));
       if (movieId) {
         this.getMovieDetails(movieId);
+        this.getRecommendedMovies(movieId);
       }
     });
   }
-  
+
   getMovieDetails(id: number): void {
     this.loading = true;
     this.error = '';
@@ -43,6 +48,24 @@ export class MovieDetailsComponent implements OnInit {
       error: (err) => {
         this.error = 'Failed to load movie details: ' + err.message;
         this.loading = false;
+      },
+    });
+  }
+
+  getRecommendedMovies(id: number): void {
+    this.recommendationsLoading = true;
+
+    this.movieService.getMovieRecommendations(id).subscribe({
+      next: (response: any) => {
+        // Take only the first 6 recommendations
+        this.recommendedMovies = response.results?.slice(0, 6) || [];
+                this.recommendationsLoading = false;
+                console.log('Recommended movies loaded:', this.recommendedMovies.length);
+      },
+      error: (err) => {
+        console.error('Failed to load recommended movies:', err);
+               this.recommendationsLoading = false;
+        
       },
     });
   }
@@ -92,7 +115,7 @@ export class MovieDetailsComponent implements OnInit {
     // For single word names, return first 2 letters
     return name.substring(0, 2).toUpperCase();
   }
-  
+
   goToHomePage(): void {
     this.router.navigate(['/']);
   }
