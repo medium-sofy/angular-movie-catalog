@@ -6,10 +6,11 @@ import { Movie } from '../../models/movie.model';
 import { MovieService } from '../../services/movie.service';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
+import { MovieCardComponent } from '../movie-card/movie-card.component';
 
 @Component({
   selector: 'app-home',
-  imports: [CommonModule, DatePipe,FormsModule,RouterLink],
+  imports: [CommonModule, DatePipe,FormsModule,RouterLink, MovieCardComponent],
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.css'] // or .scss
 })

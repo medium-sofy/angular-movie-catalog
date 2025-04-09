@@ -22,33 +22,11 @@
     </div>
 
     <div *ngIf="!loading && !error && movies.length > 0" class="movie-grid">
-        <a
-            *ngFor="let movie of movies"
-            class="movie-card"
-            [routerLink]="['/movie', movie.id]"
-        >
-            <img
-                [src]="movie.poster_path ? getPosterUrl(movie.poster_path) : 'assets/images/placeholder.png'"
-                [alt]="movie.title ? movie.title + ' Poster' : 'Placeholder Poster'"
-                class="movie-poster"
-                loading="lazy"
-                (error)="handleImageError($event)"
-            />
-            <div class="movie-info">
-                <h3 class="movie-title">{{ movie.title || 'Untitled Movie' }}</h3>
-                <p class="movie-release-date">Released: {{ movie.release_date | date:'yyyy' }}</p>
-                <p class="movie-rating">Rating: {{ movie.vote_average || 'N/A' }}/10</p>
-                <p class="movie-genres" *ngIf="movie.genres">Genres: {{ movie.genres.join(', ') }}</p>
-            </div>
-            <!-- Watchlist Button -->
-            <button
-                class="watchlist-button"
-                (click)="toggleWatchlist(movie)"
-                aria-label="Add to watchlist"
-            >
-                <span class="star-icon" [class.active]="movie.inWatchlist">&#9733;</span>
-            </button>
-        </a>
+      <app-movie-card 
+            *ngFor="let movie of movies" 
+            [movie]="movie" 
+            (watchlistToggle)="toggleWatchlist($event)">
+          </app-movie-card>
     </div>
 
     <div *ngIf="!loading && !error && movies.length === 0">

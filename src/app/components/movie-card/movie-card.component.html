@@ -1,5 +1,5 @@
 <ng-container *ngIf="movie">
-  <ng-container *ngIf="showLink; else nonLinkCard">
+  <!-- <ng-container *ngIf="showLink; else nonLinkCard"> -->
     <!-- Card with link to movie details -->
     <a class="movie-card" [routerLink]="['/movie', movie.id]">
       <div class="movie-card-content">
@@ -12,8 +12,8 @@
         />
         <div class="movie-info">
           <h3 class="movie-title">{{ movie.title || 'Untitled Movie' }}</h3>
-          <p class="movie-release-date">Released: {{ movie.release_date | date:'yyyy' }}</p>
-          <p class="movie-rating">Rating: {{ movie.vote_average | number:'1.1-1' || 'N/A' }}/10</p>
+          <p class="movie-release-date">Released: {{ movie.release_date }}</p>
+          <p class="movie-rating">Rating: {{ movie.vote_average  }}/10</p>
           <p class="movie-genres" *ngIf="getGenreString()">Genres: {{ getGenreString() }}</p>
         </div>
         <!-- Watchlist Button -->
