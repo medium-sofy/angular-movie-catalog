@@ -1,14 +1,14 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute, RouterLink, Router } from '@angular/router';
 import { DatePipe, DecimalPipe } from '@angular/common';
-import { MovieService } from '../services/movie.service';
+import { MovieService } from '../../services/movie.service';
 
 @Component({
   selector: 'app-movie-details',
   templateUrl: './movie-details.component.html',
   styleUrls: ['./movie-details.component.css'],
   // Include the necessary pipes as providers
-  providers: [DatePipe, DecimalPipe, RouterLink]
+  providers: [DatePipe, DecimalPipe, RouterLink],
 })
 export class MovieDetailsComponent implements OnInit {
   movie: any;
@@ -17,39 +17,40 @@ export class MovieDetailsComponent implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
-    private movieService: MovieService
+    private movieService: MovieService,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
-    this.route.paramMap.subscribe(params => {
+    this.route.paramMap.subscribe((params) => {
       const movieId = Number(params.get('id'));
       if (movieId) {
         this.getMovieDetails(movieId);
       }
     });
   }
-
+  
   getMovieDetails(id: number): void {
     this.loading = true;
     this.error = '';
-    
+
     this.movieService.getMovieDetails(id).subscribe({
       next: (data) => {
         this.movie = data;
         this.loading = false;
-        console.log(this.movie)
+        console.log(this.movie);
       },
       error: (err) => {
         this.error = 'Failed to load movie details: ' + err.message;
         this.loading = false;
-      }
+      },
     });
   }
 
   getPosterUrl(posterPath: string): string {
     return `https://image.tmdb.org/t/p/w500${posterPath}`;
   }
-  
+
   getCompanyLogoUrl(logoPath: string): string {
     return `https://image.tmdb.org/t/p/w200${logoPath}`;
   }
@@ -68,27 +69,31 @@ export class MovieDetailsComponent implements OnInit {
     if (!languages || languages.length === 0) {
       return 'Information not available';
     }
-    return languages.map(lang => lang.english_name || lang.name).join(', ');
+    return languages.map((lang) => lang.english_name || lang.name).join(', ');
   }
 
   toggleWatchlist(movie: any): void {
     movie.inWatchlist = !movie.inWatchlist;
     // Implement your watchlist logic here
   }
-  
+
   /**
    * Gets the initials from a company name for use in the placeholder
    */
   getCompanyInitials(name: string): string {
     if (!name) return '?';
-    
+
     // For names with multiple words, get first letter of each word (up to 2)
     const words = name.split(' ');
     if (words.length > 1) {
       return (words[0][0] + words[1][0]).toUpperCase();
     }
-    
+
     // For single word names, return first 2 letters
     return name.substring(0, 2).toUpperCase();
+  }
+  
+  goToHomePage(): void {
+    this.router.navigate(['/']);
   }
 }
