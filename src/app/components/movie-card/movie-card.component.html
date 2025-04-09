@@ -1,0 +1,29 @@
+<ng-container *ngIf="movie">
+  <ng-container *ngIf="showLink; else nonLinkCard">
+    <!-- Card with link to movie details -->
+    <a class="movie-card" [routerLink]="['/movie', movie.id]">
+      <div class="movie-card-content">
+        <img
+          [src]="movie.poster_path ? getPosterUrl(movie.poster_path) : 'assets/images/placeholder.png'"
+          [alt]="movie.title ? movie.title + ' Poster' : 'Placeholder Poster'"
+          class="movie-poster"
+          loading="lazy"
+          (error)="handleImageError($event)"
+        />
+        <div class="movie-info">
+          <h3 class="movie-title">{{ movie.title || 'Untitled Movie' }}</h3>
+          <p class="movie-release-date">Released: {{ movie.release_date | date:'yyyy' }}</p>
+          <p class="movie-rating">Rating: {{ movie.vote_average | number:'1.1-1' || 'N/A' }}/10</p>
+          <p class="movie-genres" *ngIf="getGenreString()">Genres: {{ getGenreString() }}</p>
+        </div>
+        <!-- Watchlist Button -->
+        <button
+          class="watchlist-button"
+          (click)="onToggleWatchlist($event)"
+          aria-label="Add to watchlist"
+        >
+          <span class="star-icon" [class.active]="movie.inWatchlist">&#9733;</span>
+        </button>
+      </div>
+    </a>
+  </ng-container>
