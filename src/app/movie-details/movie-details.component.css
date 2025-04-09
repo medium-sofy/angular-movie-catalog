@@ -1,10 +1,8 @@
-/* Import Bootstrap Icons if you haven't already (e.g., in styles.css or angular.json) */
+/* /* Import Bootstrap Icons if you haven't already (e.g., in styles.css or angular.json) */
 /* @import url("https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css"); */
-
 :host {
-  /* Re-declare variables if needed, or ensure they are globally available */
-  --primary-color: #0d6efd;
-  --secondary-color: #6c757d;
+  --primary-color: #0d6efd; 
+  --secondary-color: #6c757d; 
   --light-grey: #f8f9fa;
   --dark-grey: #343a40;
   --text-color: #212529;
@@ -14,110 +12,201 @@
   --hover-shadow: rgba(0, 0, 0, 0.125);
   --star-inactive: #ccc;
   --star-active: gold;
-  --star-hover: #ffdd57;
+  --star-hover: #ffdd57; 
 }
 
 .movie-details-container {
-  background-color: var(--light-grey); /* Match home background */
+  padding: 0 25px;
+  max-width: 1300px;
+  margin: 0 auto;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
   color: var(--text-color);
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif; /* Match home font */
-  padding-top: 20px; /* Add some space from the top */
-  padding-bottom: 40px;
+  background-color: var(--light-grey);
+  min-height: 100vh;
 }
 
-.movie-details-poster {
-  max-width: 100%; /* Ensure image is responsive */
-  height: auto;
-  object-fit: cover; /* Cover ensures aspect ratio maintained */
-  border: 1px solid var(--card-border); /* Subtle border */
-  box-shadow: 0 4px 12px var(--card-shadow); /* Consistent shadow */
-  background-color: #e9ecef; /* Placeholder bg */
+.movie-poster-container {
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px var(--card-shadow);
+  margin-bottom: 20px;
+  background-color: var(--card-bg);
 }
 
-img[src$="placeholder.png"].movie-details-poster {
-  object-fit: contain; /* Contain for placeholder */
+.movie-poster {
+  width: 100%;
+  aspect-ratio: 2/3;
+  object-fit: cover;
+  display: block;
+  background-color: #e9ecef;
+}
+
+img[src$="placeholder.png"] {
+  object-fit: contain;
   background-color: #f8f9fa;
+  padding: 20px;
 }
 
-.movie-details-title {
-  font-size: 2.5rem; /* Larger title for detail page */
+.watchlist-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: rgba(0, 0, 0, 0.5);
+  border: none;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  z-index: 2;
+  padding: 0;
+}
+
+.watchlist-button:hover {
+  background: rgba(0, 0, 0, 0.7);
+}
+
+.watchlist-button .star-icon {
+  font-size: 1.5em;
+  color: var(--star-inactive);
+  transition: color 0.2s, transform 0.2s;
+}
+
+.watchlist-button:hover .star-icon {
+  transform: scale(1.2);
+  color: var(--star-hover);
+}
+
+.watchlist-button .star-icon.active {
+  color: var(--star-active);
+}
+
+.movie-details-content {
+  padding: 10px 0;
+}
+
+.movie-title {
+  font-size: 2.2rem;
   font-weight: 700;
-  color: var(--dark-grey); /* Darker title */
+  margin-bottom: 15px;
   line-height: 1.2;
 }
 
-.movie-details-tagline {
-  font-size: 1.1rem;
-  color: var(--secondary-color);
-  margin-bottom: 1.5rem;
+.movie-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 15px;
 }
 
-.movie-meta-info {
-  font-size: 0.95rem;
-  color: var(--secondary-color);
-  gap: 0.5rem; /* Spacing between items */
-}
-
-.movie-meta-info strong {
-  color: var(--text-color); /* Make numbers stand out slightly */
-}
-
-.movie-meta-info i { /* Style for Bootstrap Icons */
-    font-size: 1rem;
-    vertical-align: middle;
-    margin-bottom: 2px; /* Adjust alignment */
-}
-
-.movie-details-section .section-title {
-  font-size: 1.3rem;
+.rating-badge {
+  display: inline-flex;
+  align-items: center;
+  background-color: #ffc107;
+  color: #212529;
+  padding: 5px 10px;
+  border-radius: 4px;
   font-weight: 600;
-  color: var(--dark-grey);
-  border-bottom: 2px solid var(--primary-color); /* Accent line */
-  padding-bottom: 0.4rem;
-  margin-bottom: 1rem;
-  display: inline-block; /* Keep border only under text */
 }
 
-.movie-details-overview {
-  font-size: 1rem;
-  line-height: 1.6;
-  color: var(--text-color);
+.rating-badge i {
+  margin-right: 5px;
+}
+
+.runtime-badge {
+  display: inline-flex;
+  align-items: center;
+  background-color: var(--light-grey);
+  color: var(--dark-grey);
+  padding: 5px 10px;
+  border-radius: 4px;
+  font-weight: 500;
+}
+
+.runtime-badge i {
+  margin-right: 5px;
+}
+
+.movie-genres {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 20px;
 }
 
 .genre-badge {
-  background-color: var(--secondary-color) !important; /* Override bootstrap default if needed */
-  color: white !important;
-  font-size: 0.85rem;
-  padding: 0.4em 0.8em;
+  background-color: var(--light-grey);
+  color: var(--primary-color);
+  border: 1px solid var(--primary-color);
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 0.9rem;
   font-weight: 500;
 }
 
-.genre-badge:hover {
-  opacity: 0.9;
+.movie-section {
+  margin-bottom: 25px;
+  padding-top: 10px;
+  border-top: 1px solid var(--card-border);
 }
 
-.company-list li {
-  padding: 2px 0;
-  color: var(--secondary-color);
+.section-title {
+  font-size: 1.3rem;
+  font-weight: 600;
+  margin-bottom: 10px;
+  color: var(--dark-grey);
 }
 
-.movie-website-link {
+.movie-overview {
+  line-height: 1.6;
+  color: var(--text-color);
+  font-size: 1.05rem;
+}
+
+.production-companies {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.company-badge {
+  background-color: var(--light-grey);
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 0.9rem;
+}
+
+.website-link {
   color: var(--primary-color);
   text-decoration: none;
   font-weight: 500;
-  transition: color 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  transition: color 0.2s;
 }
 
-.movie-website-link:hover {
-  color: var(--dark-grey);
+.website-link:hover {
+  color: darken(#0d6efd, 15%);
   text-decoration: underline;
 }
 
-/* Reuse loading/error styles from home or define similar ones */
-.loading-indicator, .error-message, .no-movies-message {
+.website-link i {
+  margin-left: 6px;
+  font-size: 0.9em;
+}
+
+/* Loading, Error, and No-Movies states */
+.loading-indicator, 
+.error-message, 
+.no-movies-message {
   text-align: center;
-  padding: 60px 20px;
-  font-size: 1.25em;
+  padding: 100px 20px;
+  font-size: 1.25rem;
   color: var(--secondary-color);
 }
 
@@ -126,32 +215,57 @@ img[src$="placeholder.png"].movie-details-poster {
   font-weight: 500;
 }
 
-/* Optional Watchlist Button styling */
-/* .watchlist-button-detail { */
-  /* Style similar to home or use Bootstrap button classes */
-  /* Add styles for the star icon within this specific button if needed */
-/* } */
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .movie-title {
+    font-size: 1.8rem;
+  }
+  
+  .movie-details-container {
+    padding: 0 15px;
+  }
+}
+.production-companies {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  margin-top: 10px;
+}
 
-/* .watchlist-button-detail .star-icon { */
-    /* Reuse star styles */
-/* } */
+.company-item {
+  display: flex;
+  align-items: center;
+  background-color: var(--light-grey);
+  border-radius: 6px;
+  padding: 8px 12px;
+  max-width: 100%;
+}
 
+.company-logo {
+  width: 50px;
+  height: 30px;
+  object-fit: contain;
+  margin-right: 10px;
+  background-color: white;
+  padding: 3px;
+  border-radius: 4px;
+}
 
-/* Responsive Adjustments */
-@media (max-width: 767.98px) {
-  .movie-details-title {
-    font-size: 2rem;
-    text-align: center;
-    margin-top: 1.5rem; /* Add space below centered poster */
-  }
-  .movie-details-tagline {
-      text-align: center;
-  }
-  .movie-meta-info {
-      justify-content: center; /* Center meta items on small screens */
-      font-size: 0.9rem;
-  }
-  .movie-details-section .section-title {
-      font-size: 1.2rem;
-  }
+.company-logo-placeholder {
+  width: 50px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--secondary-color);
+  color: white;
+  font-weight: bold;
+  font-size: 0.8rem;
+  margin-right: 10px;
+  border-radius: 4px;
+}
+
+.company-name {
+  font-size: 0.95rem;
+  font-weight: 500;
 }

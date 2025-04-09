@@ -84,4 +84,150 @@
   </div>
 } -->
 
-{{movie}}
+@if (movie) {
+  <div class="movie-details-container">
+    <div class="container py-4">
+      <!-- Back button -->
+      <a class="btn btn-outline-primary mb-4" routerLink="/">
+        Back To Movies
+      </a>
+      
+      <div class="row g-4">
+        <!-- Movie Poster Column -->
+        <div class="col-md-4 col-lg-3">
+          <div class="movie-poster-container">
+            <img 
+              [src]="movie.poster_path ? getPosterUrl(movie.poster_path) : 'assets/images/placeholder.png'"
+              [alt]="movie.title ? movie.title + ' Poster' : 'Movie Poster'"
+              class="movie-poster"
+              loading="lazy"
+              (error)="handleImageError($event)"
+            />
+            
+            <!-- Watchlist Button -->
+            <button 
+              class="watchlist-button"
+              (click)="toggleWatchlist(movie)"
+              aria-label="Add to watchlist"
+            >
+              <span class="star-icon" [class.active]="movie.inWatchlist">&#9733;</span>
+            </button>
+          </div>
+        </div>
+        
+        <!-- Movie Info Column -->
+        <div class="col-md-8 col-lg-9">
+          <div class="movie-details-content">
+            <h1 class="movie-title">{{ movie.title || 'Untitled Movie' }}</h1>
+            
+            <div class="movie-meta">
+              @if (movie.release_date) {
+                <span class="badge bg-primary me-2">
+                  {{ movie.release_date }}
+                </span>
+              }
+              
+              @if (movie.vote_average) {
+                <span class="rating-badge me-2">
+                  <i class="bi bi-star-fill"></i> {{ movie.vote_average }}/10
+                  <small class="text-muted">({{ movie.vote_count }} votes)</small>
+                </span>
+              }
+              
+              @if (movie.runtime) {
+                <span class="runtime-badge me-2">
+                  <i class="bi bi-clock"></i> {{ formatRuntime(movie.runtime) }}
+                </span>
+              }
+            </div>
+            
+            <!-- Genres -->
+            @if (movie.genres && movie.genres.length > 0) {
+              <div class="movie-genres mt-3">
+                @for (genre of movie.genres; track genre.id) {
+                  <span class="genre-badge">
+                    {{ genre.name }}
+                  </span>
+                }
+              </div>
+            }
+            
+            <!-- Overview -->
+            @if (movie.overview) {
+              <div class="movie-section mt-4">
+                <h3 class="section-title">Overview</h3>
+                <p class="movie-overview">{{ movie.overview }}</p>
+              </div>
+            }
+            
+            <!-- Languages -->
+            @if (movie.spoken_languages && movie.spoken_languages.length > 0) {
+              <div class="movie-section">
+                <h3 class="section-title">Languages</h3>
+                <p>{{ getLanguagesList(movie.spoken_languages) }}</p>
+              </div>
+            }
+            
+            <!-- Production Companies -->
+            @if (movie.production_companies && movie.production_companies.length > 0) {
+              <div class="movie-section">
+                <h3 class="section-title">Production Companies</h3>
+                <div class="production-companies">
+                  @for (company of movie.production_companies; track company.id) {
+                    <div class="company-item">
+                      @if (company.logo_path) {
+                        <img 
+                          [src]="getCompanyLogoUrl(company.logo_path)" 
+                          [alt]="company.name + ' logo'" 
+                          class="company-logo"
+                          loading="lazy"
+                          (error)="handleImageError($event)"
+                        />
+                      } @else {
+                        <div class="company-logo-placeholder">
+                          {{ getCompanyInitials(company.name) }}
+                        </div>
+                      }
+                      <span class="company-name">{{ company.name }}</span>
+                    </div>
+                  }
+                </div>
+              </div>
+            }
+            
+            <!-- Website Link -->
+            @if (movie.homepage) {
+              <div class="movie-section">
+                <h3 class="section-title">Website</h3>
+                <a [href]="movie.homepage" target="_blank" rel="noopener noreferrer" class="website-link">
+                  Visit Official Website <i class="bi bi-box-arrow-up-right"></i>
+                </a>
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- Loading state -->
+@if (loading && !movie) {
+  <div class="loading-indicator">
+    Loading movie details...
+  </div>
+}
+
+<!-- Error state -->
+@if (error && !loading) {
+  <div class="error-message">
+    {{ error }}
+  </div>
+}
+
+<!-- No movie found state -->
+@if (!loading && !error && !movie) {
+  <div class="no-movies-message">
+    Movie details could not be loaded or found.
+  </div>
+}
