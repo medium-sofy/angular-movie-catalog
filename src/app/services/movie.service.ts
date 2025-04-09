@@ -38,6 +38,23 @@ export class MovieService {
     return this.http.get<ApiResponse<Movie>>(url, { params });
   }
 
+  searchMovies(query: string, page: number = 1): Observable<ApiResponse<Movie>> {
+     if (!query || query.trim() === '') {
+       return this.getMovies(page); // Fall back to regular movie list if query is empty
+     }
+ 
+     const params = new HttpParams()
+       .set('api_key', this.apiKey)
+       .set('language', 'en-US')
+       .set('query', query.trim())
+       .set('include_adult', 'false')
+       .set('page', page.toString());
+ 
+     const url = `${this.apiUrl}/search/movie`;
+     return this.http.get<ApiResponse<Movie>>(url, { params });
+   }
+
+  
   /**
    * Helper to construct the full image URL.
    * @param posterPath The poster_path from the API response.
