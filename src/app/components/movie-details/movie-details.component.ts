@@ -235,13 +235,9 @@ export class MovieDetailsComponent implements OnInit {
    */
   getAvatarUrl(review: any): string {
     if (review.author_details && review.author_details.avatar_path) {
-      // Check if it's already a full URL (sometimes TMDb returns external URLs)
-      if (review.author_details.avatar_path.startsWith('/http')) {
-        return review.author_details.avatar_path.substring(1);
-      }
       return `https://image.tmdb.org/t/p/w100${review.author_details.avatar_path}`;
     }
-    return 'assets/images/user-placeholder.png'; // Default avatar
+    return 'https://robohash.org/mail@ashallendesign.co.uk'
   }
   
 }
