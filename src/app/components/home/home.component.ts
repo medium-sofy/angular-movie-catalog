@@ -7,13 +7,14 @@ import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { MovieCardComponent } from '../movie-card/movie-card.component';
 import { WishlistService } from '../../services/wishlist.service';
-
+import { LanguageService } from '../../services/language.service';
 
 @Component({
   selector: 'app-home',
-  imports: [CommonModule, DatePipe,FormsModule,RouterLink, MovieCardComponent],
+  standalone: true,
+  imports: [CommonModule, DatePipe, FormsModule, RouterLink, MovieCardComponent],
   templateUrl: './home.component.html',
-  styleUrls: ['./home.component.css'] // or .scss
+  styleUrls: ['./home.component.css']
 })
 export class HomeComponent implements OnInit, OnDestroy {
   movies: Movie[] = [];
@@ -25,46 +26,57 @@ export class HomeComponent implements OnInit, OnDestroy {
   searchQuery: string = '';
 
   private movieSubscription: Subscription | undefined;
+  private languageSubscription: Subscription | undefined;
 
-  constructor(private movieService: MovieService,
-    public wishlistService: WishlistService
-    ){}
+  constructor(
+    private movieService: MovieService,
+    public wishlistService: WishlistService,
+    private languageService: LanguageService
+  ) {}
 
   ngOnInit(): void {
     this.loadMovies(this.currentPage);
+    
+    this.languageSubscription = this.languageService.currentLanguage$.subscribe(() => {
+      this.loadMovies(1);
+    });
   }
 
   ngOnDestroy(): void {
-    // Unsubscribe to prevent memory leaks
     this.movieSubscription?.unsubscribe();
+    this.languageSubscription?.unsubscribe();
   }
 
-  loadMovies(page: number): void {
-    if (this.loading) return; // Prevent multiple simultaneous requests
+loadMovies(page: number): void {
+  if (this.loading) return;
 
-    this.loading = true;
-    this.error = null; // Clear previous errors
-    this.currentPage = page; // Update current page state
+  this.loading = true;
+  this.error = null;
+  this.currentPage = page;
 
-    this.movieSubscription = this.movieService.getMovies(page).subscribe({
-      next: (response) => {
-        this.movies = response.results;
-        this.totalPages = response.total_pages;
-        // TMDB caps total_pages at 500 for performance reasons, even if total_results is higher
-        if (this.totalPages > 500) {
-            this.totalPages = 500;
-        }
-        this.totalResults = response.total_results;
-        this.loading = false;
-        window.scrollTo(0, 0); // Scroll to top on page change
-      },
-      error: (err) => {
-        console.error("Error fetching movies:", err);
-        this.error = 'Failed to load movies. Please try again later.';
-        this.loading = false;
+  const currentLanguage = this.languageService.getCurrentLanguage();
+  
+  this.movieSubscription = this.movieService.getMovies(page, currentLanguage).subscribe({
+    next: (response) => {
+      this.movies = response.results.map(movie => ({
+        ...movie,
+        inWatchlist: this.wishlistService.isInWishlist(movie.id)
+      }));
+      this.totalPages = response.total_pages;
+      if (this.totalPages > 500) {
+        this.totalPages = 500;
       }
-    });
-  }
+      this.totalResults = response.total_results;
+      this.loading = false;
+      window.scrollTo(0, 0);
+    },
+    error: (err) => {
+      console.error("Error fetching movies:", err);
+      this.error = 'Failed to load movies. Please try again later.';
+      this.loading = false;
+    }
+  });
+}
 
   previousPage(): void {
     if (this.currentPage > 1) {

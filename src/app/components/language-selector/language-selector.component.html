@@ -1,1 +1,5 @@
-<p>language-selector works!</p>
+<select [(ngModel)]="selectedLanguage" (change)="onLanguageChange()" class="language-selector">
+  <option *ngFor="let lang of supportedLanguages" [value]="lang">
+    {{ getLanguageName(lang) }}
+  </option>
+</select>

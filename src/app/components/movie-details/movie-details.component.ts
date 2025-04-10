@@ -3,13 +3,13 @@ import { ActivatedRoute, RouterLink, Router } from '@angular/router';
 import { DatePipe, DecimalPipe } from '@angular/common';
 import { MovieService } from '../../services/movie.service';
 import { MovieCardComponent } from '../movie-card/movie-card.component';
+import { WishlistService } from '../../services/wishlist.service';
 
 @Component({
   selector: 'app-movie-details',
   templateUrl: './movie-details.component.html',
   imports: [MovieCardComponent],
   styleUrls: ['./movie-details.component.css'],
-  // Include the necessary pipes as providers
   providers: [DatePipe, DecimalPipe, RouterLink],
 })
 export class MovieDetailsComponent implements OnInit {
@@ -24,12 +24,13 @@ export class MovieDetailsComponent implements OnInit {
   reviewsLoading = false;
   reviewsError = '';
   showAllReviews = false;
-  maxReviewsInitial = 2; // Initial number of reviews to show
+  maxReviewsInitial = 2;
 
   constructor(
     private route: ActivatedRoute,
     private movieService: MovieService,
     private router: Router,
+    private wishlistService: WishlistService
   ) {}
 
   ngOnInit(): void {
@@ -46,35 +47,37 @@ export class MovieDetailsComponent implements OnInit {
   getMovieDetails(id: number): void {
     this.loading = true;
     this.error = '';
-
+    
     this.movieService.getMovieDetails(id).subscribe({
-      next: (data) => {
-        this.movie = data;
+      next: (data: any) => {
+        this.movie = {
+          ...data,
+          inWatchlist: this.wishlistService.isInWishlist(data.id)
+        };
         this.loading = false;
-        console.log(this.movie);
       },
       error: (err) => {
         this.error = 'Failed to load movie details: ' + err.message;
         this.loading = false;
-      },
+      }
     });
   }
 
   getRecommendedMovies(id: number): void {
     this.recommendationsLoading = true;
-
+    
     this.movieService.getMovieRecommendations(id).subscribe({
       next: (response: any) => {
-        // Take only the first 6 recommendations
-        this.recommendedMovies = response.results?.slice(0, 6) || [];
-                this.recommendationsLoading = false;
-                console.log('Recommended movies loaded:', this.recommendedMovies.length);
+        this.recommendedMovies = (response.results ? response.results.slice(0, 6) : []).map((movie: any) => ({
+          ...movie,
+          inWatchlist: this.wishlistService.isInWishlist(movie.id)
+        }));
+        this.recommendationsLoading = false;
       },
       error: (err) => {
         console.error('Failed to load recommended movies:', err);
-               this.recommendationsLoading = false;
-        
-      },
+        this.recommendationsLoading = false;
+      }
     });
   }
 
@@ -104,23 +107,24 @@ export class MovieDetailsComponent implements OnInit {
   }
 
   toggleWatchlist(movie: any): void {
-    movie.inWatchlist = !movie.inWatchlist;
-    // Implement your watchlist logic here
+    this.wishlistService.toggleWishlist(movie);
+    movie.inWatchlist = this.wishlistService.isInWishlist(movie.id);
+    
+
+    this.recommendedMovies = this.recommendedMovies.map(m => {
+      if (m.id === movie.id) {
+        return { ...m, inWatchlist: this.wishlistService.isInWishlist(m.id) };
+      }
+      return m;
+    });
   }
 
-  /**
-   * Gets the initials from a company name for use in the placeholder
-   */
   getCompanyInitials(name: string): string {
     if (!name) return '?';
-
-    // For names with multiple words, get first letter of each word (up to 2)
     const words = name.split(' ');
     if (words.length > 1) {
       return (words[0][0] + words[1][0]).toUpperCase();
     }
-
-    // For single word names, return first 2 letters
     return name.substring(0, 2).toUpperCase();
   }
 
@@ -128,9 +132,6 @@ export class MovieDetailsComponent implements OnInit {
     this.router.navigate(['/']);
   }
   
-  /**
-   * Fetches movie reviews from the API
-   */
   getMovieReviews(id: number): void {
     this.reviewsLoading = true;
     this.reviewsError = '';
@@ -138,106 +139,70 @@ export class MovieDetailsComponent implements OnInit {
     this.movieService.getMovieReviews(id).subscribe({
       next: (response: any) => {
         this.reviews = response.results || [];
-        // Format the reviews to make them more presentable
         this.reviews = this.reviews.map(review => ({
           ...review,
           created_at: new Date(review.created_at),
-          // Truncate content for preview if it's too long
           content_preview: review.content.length > 300 ? 
             review.content.substring(0, 300) + '...' : 
             review.content,
           expanded: false
         }));
-        
-        // Set initial displayed reviews
         this.updateDisplayedReviews();
         this.reviewsLoading = false;
       },
       error: (err) => {
         this.reviewsError = 'Failed to load reviews';
         this.reviewsLoading = false;
-        console.error('Error loading reviews:', err);
       }
     });
   }
   
-  /**
-   * Updates the displayed reviews based on showAllReviews flag
-   */
   updateDisplayedReviews(): void {
-    if (this.showAllReviews) {
-      this.displayedReviews = this.reviews;
-    } else {
-      this.displayedReviews = this.reviews.slice(0, this.maxReviewsInitial);
-    }
+    this.displayedReviews = this.showAllReviews 
+      ? this.reviews 
+      : this.reviews.slice(0, this.maxReviewsInitial);
   }
   
-  /**
-   * Toggles between showing all reviews or just initial ones
-   */
   toggleReviews(): void {
     this.showAllReviews = !this.showAllReviews;
     this.updateDisplayedReviews();
   }
   
-  /**
-   * Toggles expansion state of a single review
-   */
   toggleReviewExpansion(review: any): void {
     review.expanded = !review.expanded;
   }
   
-  /**
-   * Formats author name for display (handles missing names)
-   */
   formatAuthorName(review: any): string {
-    if (review.author_details && review.author_details.name && review.author_details.name.trim()) {
+    if (review.author_details?.name?.trim()) {
       return review.author_details.name;
     }
     return review.author || 'Anonymous';
   }
   
-  /**
-   * Formats review date for display
-   */
   formatReviewDate(date: Date): string {
     const now = new Date();
     const diffMs = now.getTime() - date.getTime();
     const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
     
-    if (diffDays < 1) {
-      return 'Today';
-    } else if (diffDays === 1) {
-      return 'Yesterday';
-    } else if (diffDays < 7) {
-      return `${diffDays} days ago`;
-    } else if (diffDays < 30) {
-      return `${Math.floor(diffDays / 7)} weeks ago`;
-    } else if (diffDays < 365) {
-      return `${Math.floor(diffDays / 30)} months ago`;
-    } else {
-      return `${Math.floor(diffDays / 365)} years ago`;
-    }
+    if (diffDays < 1) return 'Today';
+    if (diffDays === 1) return 'Yesterday';
+    if (diffDays < 7) return `${diffDays} days ago`;
+    if (diffDays < 30) return `${Math.floor(diffDays / 7)} weeks ago`;
+    if (diffDays < 365) return `${Math.floor(diffDays / 30)} months ago`;
+    return `${Math.floor(diffDays / 365)} years ago`;
   }
   
-  /**
-   * Gets the rating color based on score
-   */
   getRatingColor(rating: number): string {
     if (!rating && rating !== 0) return 'var(--secondary-color)';
-    if (rating >= 7) return '#2ecc71'; // green
-    if (rating >= 5) return '#f39c12'; // orange
-    return '#e74c3c'; // red
+    if (rating >= 7) return '#2ecc71';
+    if (rating >= 5) return '#f39c12';
+    return '#e74c3c';
   }
   
-  /**
-   * Gets avatar URL for the review author or a default
-   */
   getAvatarUrl(review: any): string {
-    if (review.author_details && review.author_details.avatar_path) {
+    if (review.author_details?.avatar_path) {
       return `https://image.tmdb.org/t/p/w100${review.author_details.avatar_path}`;
     }
-    return 'https://robohash.org/mail@ashallendesign.co.uk'
+    return 'https://robohash.org/mail@ashallendesign.co.uk';
   }
-  
 }

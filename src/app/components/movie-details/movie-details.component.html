@@ -106,14 +106,15 @@
             
             <!-- Watchlist Button -->
             <button 
-              class="watchlist-button"
-              (click)="toggleWatchlist(movie)"
-              aria-label="Add to watchlist"
-            >
-              <span class="star-icon" [class.active]="movie.inWatchlist">&#9733;</span>
-            </button>
-          </div>
+            class="watchlist-button"
+            (click)="toggleWatchlist(movie)"
+            aria-label="Add to watchlist"
+          >
+            <span class="star-icon" [class.active]="movie.inWatchlist">&#9733;</span>
+          </button>
         </div>
+      </div>
+
         
         <!-- Movie Info Column -->
         <div class="col-md-8 col-lg-9">

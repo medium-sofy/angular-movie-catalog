@@ -4,3 +4,27 @@ html, body {
   padding: 0;
 }
 
+/* RTL layout support */
+[dir="rtl"] {
+  text-align: right;
+}
+
+[dir="rtl"] .navbar {
+  direction: rtl;
+}
+
+[dir="rtl"] .movie-grid {
+  direction: rtl;
+}
+
+[dir="rtl"] .movie-card {
+  text-align: right;
+}
+
+[dir="rtl"] .pagination-controls {
+  direction: rtl;
+}
+
+[dir="rtl"] .search-bar input {
+  text-align: right;
+}
