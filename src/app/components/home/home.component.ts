@@ -1,4 +1,3 @@
-// src/app/components/home/home.component.ts
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { Subscription } from 'rxjs';
@@ -6,15 +5,13 @@ import { Movie } from '../../models/movie.model';
 import { MovieService } from '../../services/movie.service';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
+import { MovieCardComponent } from '../movie-card/movie-card.component';
 import { WishlistService } from '../../services/wishlist.service';
-// import { FaIconLibrary, FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-// import { faHeart as faHeartSolid } from '@fortawesome/free-solid-svg-icons';
-// import { faHeart as faHeartRegular } from '@fortawesome/free-regular-svg-icons';
 
 
 @Component({
   selector: 'app-home',
-  imports: [CommonModule, DatePipe,FormsModule,RouterLink],
+  imports: [CommonModule, DatePipe,FormsModule,RouterLink, MovieCardComponent],
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.css'] // or .scss
 })
@@ -27,13 +24,11 @@ export class HomeComponent implements OnInit, OnDestroy {
   error: string | null = null;
   searchQuery: string = '';
 
-
-
   private movieSubscription: Subscription | undefined;
 
   constructor(private movieService: MovieService,
-  public wishlistService: WishlistService // <-- Add this line
-  ){}
+    public wishlistService: WishlistService
+    ){}
 
   ngOnInit(): void {
     this.loadMovies(this.currentPage);
@@ -109,7 +104,7 @@ onSearch(): void {
 
 toggleWatchlist(movie: Movie): void {
   this.wishlistService.toggleWishlist(movie);
-  movie.inWatchlist = this.wishlistService.isInWishlist(movie.id); 
+  movie.inWatchlist = this.wishlistService.isInWishlist(movie.id);
 }
 isInWishlist(id: number): boolean {
   return this.wishlistService.isInWishlist(id);
