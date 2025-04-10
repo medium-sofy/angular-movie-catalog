@@ -1,17 +1,14 @@
 <div class="wishlist-container">
-
   <div class="back-header">
-    <button routerLink="/" class="back-to-movies">
+    <button routerLink="/" class="btn btn-outline-primary mb-4">
       <fa-icon [icon]="faArrowLeft"></fa-icon> Back to Movies
     </button>
   </div>
-
 
   <div *ngIf="wishlistItems.length === 0" class="empty-wishlist">
     <fa-icon [icon]="faHeartBroken" class="broken-heart"></fa-icon>
     <p>Your watchlist is empty</p>
   </div>
-
 
   <div *ngIf="wishlistItems.length > 0" class="movie-grid">
     <div *ngFor="let item of wishlistItems" class="movie-card">
@@ -19,12 +16,14 @@
         <img [src]="getPosterUrl(item.poster_path)" 
              [alt]="item.title"
              (error)="handleImageError($event)">
-        <button (click)="remove(item.id)" class="remove-btn" title="Remove from watchlist">
-          <fa-icon [icon]="faTimes"></fa-icon>
-        </button>
-        <button (click)="toggle(item)" class="heart-btn" title="Remove from watchlist">
-          <fa-icon [icon]="fasHeart"></fa-icon>
-        </button>
+        <div class="action-buttons">
+          <button (click)="remove(item.id)" class="remove-btn" title="Remove from watchlist">
+            <fa-icon [icon]="faTimes"></fa-icon>
+          </button>
+          <button (click)="toggle(item)" class="heart-btn" title="Toggle watchlist">
+            <fa-icon [icon]="fasHeart"></fa-icon>
+          </button>
+        </div>
       </div>
       
       <div class="movie-info">
@@ -49,6 +48,13 @@
         
         <div class="overview-container" *ngIf="item.overview">
           <p class="overview">{{ item.overview }}</p>
+        </div>
+
+
+        <div class="card-footer">
+          <button [routerLink]="['/movie', item.id]" class="details-btn btn btn-outline-primary">
+            More Details
+          </button>
         </div>
       </div>
     </div>

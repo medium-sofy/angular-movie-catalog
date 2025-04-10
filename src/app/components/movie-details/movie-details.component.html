@@ -1,0 +1,346 @@
+<!-- <div class="movie-details-container container my-4" @if="movie">
+  <div class="row g-4">
+    <div class="col-md-4 text-center text-md-start">
+      <img
+        [src]="movie.poster_path ? getPosterUrl(movie.poster_path) : 'assets/images/placeholder.png'"
+        [alt]="movie.title ? movie.title + ' Poster' : 'Movie Poster'"
+        class="img-fluid movie-details-poster rounded shadow-sm"
+        loading="lazy"
+      />
+    </div>
+
+    <div class="col-md-8">
+      <h1 class="movie-details-title mb-2">{{ movie.title || 'Untitled Movie' }}</h1>
+      <p class="text-muted fst-italic movie-details-tagline" @if="movie.tagline">{{ movie.tagline }}</p>
+
+      <div class="d-flex flex-wrap align-items-center movie-meta-info mb-3">
+        <span class="me-3" title="Rating">
+          <i class="bi bi-star-fill text-warning me-1"></i> <strong>{{ movie.vote_average | number:'1.1-1' }}</strong> / 10
+          <span class="text-muted ms-1">({{ movie.vote_count }} votes)</span>
+        </span>
+
+        <span class="me-3" title="Release Date">
+          <i class="bi bi-calendar3 me-1 text-secondary"></i> {{ movie.release_date | date:'longDate' }}
+        </span>
+
+        <span class="me-3" title="Duration" @if="movie.runtime">
+          <i class="bi bi-clock me-1 text-secondary"></i> {{ movie.runtime | durationFormat }}
+        </span>
+      </div>
+
+      <div class="movie-details-section mb-4" @if="movie.overview">
+        <h5 class="section-title">Overview</h5>
+        <p class="movie-details-overview">{{ movie.overview }}</p>
+      </div>
+
+      <div class="movie-details-section mb-4" @if="movie.genres && movie.genres.length > 0">
+        <h5 class="section-title">Genres</h5>
+        @for (genre of movie.genres; track genre.id) {
+          <span class="badge genre-badge me-2 mb-2">{{ genre.name }}</span>
+        }
+      </div>
+
+      <div class="movie-details-section mb-4" @if="movie.spoken_languages && movie.spoken_languages.length > 0">
+        <h5 class="section-title">Spoken Languages</h5>
+        <p class="mb-0">
+          {{getLanguagesList(movie.spoken_languages)}}
+        </p>
+      </div>
+
+      <div class="movie-details-section mb-4" @if="movie.production_companies && movie.production_companies.length > 0">
+        <h5 class="section-title">Production Companies</h5>
+        <ul class="list-unstyled mb-0 company-list">
+          @for (company of movie.production_companies; track company.id) {
+            <li>{{ company.name }}</li>
+          }
+        </ul>
+      </div>
+
+      <div class="movie-details-section mb-4" @if="movie.homepage">
+        <h5 class="section-title">Website</h5>
+        <a [href]="movie.homepage" target="_blank" rel="noopener noreferrer" class="movie-website-link">
+          Visit Movie Homepage <i class="bi bi-box-arrow-up-right ms-1"></i>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+@if (loading && !movie) {
+  <div class="loading-indicator">
+    Loading movie details...
+  </div>
+}
+
+@if (error && !loading) {
+  <div class="error-message">
+    {{ error }}
+  </div>
+}
+
+@if (!loading && !error && !movie) {
+  <div class="no-movies-message">
+    Movie details could not be loaded or found.
+  </div>
+} -->
+
+@if (movie) {
+  <div class="movie-details-container">
+    <div class="container py-4">
+      <!-- Back button -->
+      <button class="btn btn-outline-primary mb-4" (click)="goToHomePage()">
+        <i class="bi bi-arrow-left"></i> Back To Movies
+      </button>
+      
+      <div class="row g-4">
+        <!-- Movie Poster Column -->
+        <div class="col-md-4 col-lg-3">
+          <div class="movie-poster-container">
+            <img 
+              [src]="movie.poster_path ? getPosterUrl(movie.poster_path) : 'assets/images/placeholder.png'"
+              [alt]="movie.title ? movie.title + ' Poster' : 'Movie Poster'"
+              class="movie-poster"
+              loading="lazy"
+              (error)="handleImageError($event)"
+            />
+            
+            <!-- Watchlist Button -->
+            <button 
+            class="watchlist-button"
+            (click)="toggleWatchlist(movie)"
+            aria-label="Add to watchlist"
+          >
+            <span class="star-icon" [class.active]="movie.inWatchlist">&#9733;</span>
+          </button>
+        </div>
+      </div>
+
+        
+        <!-- Movie Info Column -->
+        <div class="col-md-8 col-lg-9">
+          <div class="movie-details-content">
+            <h1 class="movie-title">{{ movie.title || 'Untitled Movie' }}</h1>
+            
+            <div class="movie-meta">
+              @if (movie.release_date) {
+                <span class="badge bg-primary me-2">
+                  {{ movie.release_date }}
+                </span>
+              }
+              
+              @if (movie.vote_average) {
+                <span class="rating-badge me-2">
+                  <i class="bi bi-star-fill"></i> {{ movie.vote_average }}/10
+                  <small class="text-muted">({{ movie.vote_count }} votes)</small>
+                </span>
+              }
+              
+              @if (movie.runtime) {
+                <span class="runtime-badge me-2">
+                  <i class="bi bi-clock"></i> {{ formatRuntime(movie.runtime) }}
+                </span>
+              }
+            </div>
+            
+            <!-- Genres -->
+            @if (movie.genres && movie.genres.length > 0) {
+              <div class="movie-genres mt-3">
+                @for (genre of movie.genres; track genre.id) {
+                  <span class="genre-badge">
+                    {{ genre.name }}
+                  </span>
+                }
+              </div>
+            }
+            
+            <!-- Overview -->
+            @if (movie.overview) {
+              <div class="movie-section mt-4">
+                <h3 class="section-title">Overview</h3>
+                <p class="movie-overview">{{ movie.overview }}</p>
+              </div>
+            }
+            
+            <!-- Languages -->
+            @if (movie.spoken_languages && movie.spoken_languages.length > 0) {
+              <div class="movie-section">
+                <h3 class="section-title">Languages</h3>
+                <p>{{ getLanguagesList(movie.spoken_languages) }}</p>
+              </div>
+            }
+            
+            <!-- Production Companies -->
+            @if (movie.production_companies && movie.production_companies.length > 0) {
+              <div class="movie-section">
+                <h3 class="section-title">Production Companies</h3>
+                <div class="production-companies">
+                  @for (company of movie.production_companies; track company.id) {
+                    <div class="company-item">
+                      @if (company.logo_path) {
+                        <img 
+                          [src]="getCompanyLogoUrl(company.logo_path)" 
+                          [alt]="company.name + ' logo'" 
+                          class="company-logo"
+                          loading="lazy"
+                          (error)="handleImageError($event)"
+                        />
+                      } @else {
+                        <div class="company-logo-placeholder">
+                          {{ getCompanyInitials(company.name) }}
+                        </div>
+                      }
+                      <span class="company-name">{{ company.name }}</span>
+                    </div>
+                  }
+                </div>
+              </div>
+            }
+            
+            <!-- Website Link -->
+            @if (movie.homepage) {
+              <div class="movie-section">
+                <h3 class="section-title">Website</h3>
+                <a [href]="movie.homepage" target="_blank" rel="noopener noreferrer" class="website-link">
+                  Visit Official Website <i class="bi bi-box-arrow-up-right"></i>
+                </a>
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- Loading state -->
+@if (loading && !movie) {
+  <div class="loading-indicator">
+    Loading movie details...
+  </div>
+}
+
+<!-- Error state -->
+@if (error && !loading) {
+  <div class="error-message">
+    {{ error }}
+  </div>
+}
+
+<!-- No movie found state -->
+@if (!loading && !error && !movie) {
+  <div class="no-movies-message">
+    Movie details could not be loaded or found.
+  </div>
+}
+
+<!-- User Reviews Section -->
+@if (!reviewsLoading && reviews.length > 0) {
+  <div class="reviews-section container">
+    <h3 class="section-title">User Reviews ({{ reviews.length }})</h3>
+    
+    <div class="reviews-container">
+      <!-- Individual reviews -->
+      @for (review of displayedReviews; track review.id) {
+        <div class="review-card">
+          <div class="review-header">
+            <div class="reviewer-info">
+              <img [src]="getAvatarUrl(review)" 
+                  [alt]="formatAuthorName(review)" 
+                  class="reviewer-avatar"
+                  (error)="handleImageError($event)">
+              <div class="reviewer-details">
+                <h4 class="reviewer-name">{{ formatAuthorName(review) }}</h4>
+                <span class="review-date">{{ formatReviewDate(review.created_at) }}</span>
+              </div>
+            </div>
+            
+            @if (review.author_details && review.author_details.rating) {
+              <div class="review-rating">
+                <span class="rating-value" [style.color]="getRatingColor(review.author_details.rating)">
+                  {{ review.author_details.rating }}/10
+                </span>
+              </div>
+            }
+          </div>
+          
+          <div class="review-content">
+            <p class="review-text" [class.expanded]="review.expanded">
+              {{ review.expanded ? review.content : review.content_preview }}
+            </p>
+            
+            @if (review.content.length > 300) {
+              <button class="read-more-btn" (click)="toggleReviewExpansion(review)">
+                {{ review.expanded ? 'Read Less' : 'Read More' }}
+              </button>
+            }
+          </div>
+        </div>
+      }
+    </div>
+    
+    <!-- Show more/less reviews button -->
+    @if (reviews.length > maxReviewsInitial) {
+      <div class="reviews-toggle">
+        <button class="btn btn-outline-primary" (click)="toggleReviews()">
+          {{ showAllReviews ? 'Show Less Reviews' : 'Show All Reviews' }}
+        </button>
+      </div>
+    }
+  </div>
+}
+
+<!-- Reviews loading state -->
+@if (reviewsLoading) {
+  <div class="reviews-loading container">
+    <p>Loading reviews...</p>
+  </div>
+}
+
+<!-- No reviews message -->
+@if (!reviewsLoading && reviews.length === 0 && !reviewsError) {
+  <div class="no-reviews-message container">
+    <p>No reviews available for this movie.</p>
+  </div>
+}
+
+<!-- Reviews error state -->
+@if (!reviewsLoading && reviewsError) {
+  <div class="reviews-error container">
+    <p>{{ reviewsError }}</p>
+  </div>
+}
+
+
+<!-- Recommended Movies Section -->
+  
+<div class="container mt-5">
+  @if(recommendationsLoading)
+  {
+  <div class="text-center">
+    <p>Loading recommendations...</p>
+  </div>
+  }
+  
+  @if (recommendedMovies && recommendedMovies.length > 0) {
+    <div class="recommended-movies-section">
+      <div class="container">
+        <h3 class="section-title">You May Also Like</h3>
+        <div class="recommended-movies-grid">
+          @for (movie of recommendedMovies; track movie.id) {
+            <app-movie-card 
+              [movie]="movie" 
+              (watchlistToggle)="toggleWatchlist($event)">
+            </app-movie-card>
+          }
+        </div>
+      </div>
+    </div>
+    <!-- Debug info - remove in production -->
+      <!-- @if (!recommendationsLoading && (!recommendedMovies || recommendedMovies.length === 0)
+      {
+      <div class="alert alert-info">
+        No recommendations available for this movie.
+      </div>
+      } -->
+}
+</div>

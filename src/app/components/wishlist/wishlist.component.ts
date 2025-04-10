@@ -9,7 +9,9 @@ import {
   faCalendar,
   faStar,
   faClock,
-  faArrowLeft
+  faArrowLeft,
+  faInfoCircle 
+
 } from '@fortawesome/free-solid-svg-icons';
 import { RouterModule } from '@angular/router';
 
@@ -29,6 +31,7 @@ export class WishlistComponent implements OnInit {
   faStar = faStar;
   faClock = faClock;
   faArrowLeft = faArrowLeft;
+  faInfoCircle = faInfoCircle;
   
   wishlistItems: any[] = [];
 

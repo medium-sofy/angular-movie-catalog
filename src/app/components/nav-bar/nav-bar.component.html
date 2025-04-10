@@ -1,0 +1,34 @@
+<div class="navbar-container">
+  <nav class="navbar">
+    <h1 class="navbar-title">Movie App</h1>
+    
+    <ul class="navbar-links">
+      <li>
+        <a routerLink="/" 
+           routerLinkActive="active" 
+           [routerLinkActiveOptions]="{ exact: true }" 
+           class="nav-link">
+          Home
+        </a>
+      </li>
+      <li>
+        <a routerLink="/wishlist" 
+           routerLinkActive="active" 
+           class="nav-link">
+          Watchlist
+          <app-wishlist-counter class="counter-badge"></app-wishlist-counter>
+        </a>
+      </li>
+    </ul>
+
+
+    <div class="language-selector">
+      <select [(ngModel)]="selectedLanguage" (change)="onLanguageChange()">
+        <option value="en">English</option>
+        <option value="ar">العربية</option>
+        <option value="fr">Français</option>
+        <option value="zh">中文</option>
+      </select>
+    </div>
+  </nav>
+</div>

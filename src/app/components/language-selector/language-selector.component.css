@@ -1,0 +1,12 @@
+.language-selector {
+    padding: 8px 12px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    background-color: white;
+    cursor: pointer;
+  }
+  
+  /* RTL specific styles */
+  [dir="rtl"] .language-selector {
+    text-align: right;
+  }
