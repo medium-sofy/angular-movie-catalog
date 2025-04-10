@@ -1,60 +1,72 @@
 <div class="home-container">
+  <h1>Popular Movies</h1>
 
-    <h1>Popular Movies</h1>
+  <!-- Search Bar -->
+  <div class="search-bar">
+    <input
+      type="text"
+      placeholder="Search for movies..."
+      [(ngModel)]="searchQuery"
+      (input)="onSearchInput()"
+      aria-label="Search for movies"
+    />
+    <button
+      class="btn btn-outline-secondary"
+      type="button"
+      *ngIf="searchQuery"
+      (click)="clearSearch()"
+    >
+      <i class="bi bi-x">Clear search</i>
+    </button>
+  </div>
+  @if (isSearchMode) {
+    <h2 class="search-results-title">
+      Search Results{{ searchQuery ? ' for "' + searchQuery + '"' : "" }}
+      <span class="results-count">({{ totalResults }} results)</span>
+    </h2>
+  }
+  <div *ngIf="loading" class="loading-indicator">Loading movies...</div>
 
-    <!-- Search Bar -->
-    <div class="search-bar">
-        <input
-            type="text"
-            placeholder="Search for movies..."
-            [(ngModel)]="searchQuery"
-            (input)="onSearch()"
-            aria-label="Search for movies"
-        />
-    </div>
+  <div *ngIf="error && !loading" class="error-message">
+    {{ error }}
+  </div>
 
-    <div *ngIf="loading" class="loading-indicator">
-        Loading movies...
-    </div>
+  <div *ngIf="!loading && !error && movies.length > 0" class="movie-grid">
+    <app-movie-card
+      *ngFor="let movie of movies"
+      [movie]="movie"
+      (watchlistToggle)="toggleWatchlist($event)"
+    >
+    </app-movie-card>
+  </div>
 
-    <div *ngIf="error && !loading" class="error-message">
-        {{ error }}
-    </div>
+  <div *ngIf="!loading && !error && movies.length === 0">
+    <p>No movies found.</p>
+  </div>
 
-    <div *ngIf="!loading && !error && movies.length > 0" class="movie-grid">
-      <app-movie-card
-            *ngFor="let movie of movies"
-            [movie]="movie"
-            (watchlistToggle)="toggleWatchlist($event)">
-          </app-movie-card>
-    </div>
+  <!-- Pagination Controls -->
+  <div *ngIf="!loading && !error && totalPages > 0" class="pagination-controls">
+    <button
+      [disabled]="currentPage <= 1 || loading"
+      (click)="previousPage()"
+      aria-label="Go to previous page"
+    >
+      &laquo; Previous
+    </button>
 
-    <div *ngIf="!loading && !error && movies.length === 0">
-        <p>No movies found.</p>
-    </div>
+    <span> Page {{ currentPage }} of {{ totalPages }} </span>
 
-    <!-- Pagination Controls -->
-    <div *ngIf="!loading && !error && totalPages > 0" class="pagination-controls">
-        <button
-            [disabled]="currentPage <= 1 || loading"
-            (click)="previousPage()"
-            aria-label="Go to previous page"
-        >
-            &laquo; Previous
-        </button>
+    <button
+      [disabled]="currentPage >= totalPages || loading"
+      (click)="nextPage()"
+      aria-label="Go to next page"
+    >
+      Next &raquo;
+    </button>
+  </div>
 
-        <span> Page {{ currentPage }} of {{ totalPages }} </span>
-
-        <button
-            [disabled]="currentPage >= totalPages || loading"
-            (click)="nextPage()"
-            aria-label="Go to next page"
-        >
-            Next &raquo;
-        </button>
-    </div>
-
-    <div *ngIf="!loading && !error && totalResults > 0" class="total-results">
-        Total Results: {{ totalResults }} (Displaying up to 500 pages)
-    </div>
+  <div *ngIf="!loading && !error && totalResults > 0" class="total-results">
+    Total Results: {{ totalResults }} (Displaying up to 500 pages)
+  </div>
 </div>
+

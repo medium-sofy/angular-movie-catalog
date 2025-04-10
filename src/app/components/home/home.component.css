@@ -268,3 +268,50 @@ img[src$="placeholder.png"] {
     font-size: 1.1em;
     color: var(--secondary-color);
 }
+
+.search-container {
+  padding-top:36px;
+  margin-bottom: 2rem;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.search-results-title {
+  margin-bottom: 1.5rem;
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.results-count {
+  font-size: 0.9rem;
+  color: var(--secondary-color);
+  font-weight: normal;
+  margin-left: 0.5rem;
+}
+
+/* No Results Styles */
+.no-results {
+  text-align: center;
+  padding: 3rem 1rem;
+  background-color: rgba(0, 0, 0, 0.02);
+  border-radius: 8px;
+  margin: 2rem 0;
+}
+
+.no-results .large-icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  color: var(--secondary-color);
+  opacity: 0.5;
+}
+
+.no-results h3 {
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.no-results p {
+  color: var(--secondary-color);
+  margin-bottom: 1.5rem;
+}
