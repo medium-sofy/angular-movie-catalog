@@ -1,15 +1,23 @@
-// src/app/components/home/home.component.ts
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { CommonModule, DatePipe } from '@angular/common';
-import { Subscription, Subject, debounceTime, distinctUntilChanged, switchMap } from 'rxjs';
-import { Movie } from '../../models/movie.model';
-import { MovieService } from '../../services/movie.service';
-import { FormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
-import { MovieCardComponent } from '../movie-card/movie-card.component';
+import { Component, OnInit, OnDestroy } from "@angular/core";
+import { CommonModule, DatePipe } from "@angular/common";
+import {
+  Subscription,
+  Subject,
+  debounceTime,
+  distinctUntilChanged,
+  switchMap,
+} from "rxjs";
+import { Movie } from "../../models/movie.model";
+import { MovieService } from "../../services/movie.service";
+import { FormsModule } from "@angular/forms";
+import { RouterLink } from "@angular/router";
+import { MovieCardComponent } from "../movie-card/movie-card.component";
+import { WishlistService } from "../../services/wishlist.service";
+import { LanguageService } from "../../services/language.service";
 
 @Component({
-  selector: 'app-home',
+  selector: "app-home",
+  standalone: true,
   imports: [
     CommonModule,
     DatePipe,
@@ -17,8 +25,8 @@ import { MovieCardComponent } from '../movie-card/movie-card.component';
     RouterLink,
     MovieCardComponent,
   ],
-  templateUrl: './home.component.html',
-  styleUrls: ['./home.component.css'], // or .scss
+  templateUrl: "./home.component.html",
+  styleUrls: ["./home.component.css"],
 })
 export class HomeComponent implements OnInit, OnDestroy {
   movies: Movie[] = [];
@@ -27,14 +35,19 @@ export class HomeComponent implements OnInit, OnDestroy {
   totalResults: number = 0;
   loading: boolean = false;
   error: string | null = null;
-  searchQuery: string = '';
+  searchQuery: string = "";
   isSearchMode: boolean = false;
 
   private searchTerms = new Subject<string>();
   private movieSubscription: Subscription | undefined;
   private searchSubscription: Subscription | undefined;
+  private languageSubscription: Subscription | undefined;
 
-  constructor(private movieService: MovieService) {}
+  constructor(
+    private movieService: MovieService,
+    public wishlistService: WishlistService,
+    private languageService: LanguageService,
+  ) {}
 
   ngOnInit(): void {
     this.loadMovies(this.currentPage);
@@ -45,7 +58,7 @@ export class HomeComponent implements OnInit, OnDestroy {
         debounceTime(500), // Wait for 500ms pause in events
         distinctUntilChanged(), // Only emit if value changed
         switchMap((term: string) => {
-          this.isSearchMode = term.trim() !== '';
+          this.isSearchMode = term.trim() !== "";
           this.loading = true;
           this.currentPage = 1; // Reset to first page on new search
           return term.trim()
@@ -62,58 +75,75 @@ export class HomeComponent implements OnInit, OnDestroy {
           window.scrollTo(0, 0);
         },
         error: (err) => {
-          console.error('Error searching movies:', err);
-          this.error = 'Failed to search movies. Please try again later.';
+          console.error("Error searching movies:", err);
+          this.error = "Failed to search movies. Please try again later.";
           this.loading = false;
         },
       });
+
+    this.languageSubscription = this.languageService.currentLanguage$.subscribe(
+      () => {
+        this.loadMovies(1);
+      },
+    );
   }
 
   ngOnDestroy(): void {
-    // Unsubscribe to prevent memory leaks
     this.movieSubscription?.unsubscribe();
+    this.languageSubscription?.unsubscribe();
     this.searchSubscription?.unsubscribe();
   }
 
   loadMovies(page: number): void {
-    if (this.loading) return; // Prevent multiple simultaneous requests
+    if (this.loading) return;
 
     this.loading = true;
-    this.error = null; // Clear previous errors
-    this.currentPage = page; // Update current page state
+    this.error = null;
+    this.currentPage = page;
+
+    const currentLanguage = this.languageService.getCurrentLanguage();
+
     // If in search mode, search movies with the current query
     // Otherwise, get the regular movie list
     const request = this.isSearchMode
       ? this.movieService.searchMovies(this.searchQuery, page)
       : this.movieService.getMovies(page);
 
-    this.movieSubscription = this.movieService.getMovies(page).subscribe({
-      next: (response) => {
-        this.movies = response.results;
-        this.totalPages = Math.min(response.total_pages, 500);
-        this.totalResults = response.total_results;
-        this.loading = false;
-        window.scrollTo(0, 0);
-      },
-      error: (err) => {
-        console.error('Error fetching movies:', err);
-        this.error = 'Failed to load movies. Please try again later.';
-        this.loading = false;
-      },
-    });
+    this.movieSubscription = this.movieService
+      .getMovies(page, currentLanguage)
+      .subscribe({
+        next: (response) => {
+          this.movies = response.results.map((movie) => ({
+            ...movie,
+            inWatchlist: this.wishlistService.isInWishlist(movie.id),
+          }));
+          this.totalPages = response.total_pages;
+          if (this.totalPages > 500) {
+            this.totalPages = 500;
+          }
+          this.totalResults = response.total_results;
+          this.loading = false;
+          window.scrollTo(0, 0);
+        },
+        error: (err) => {
+          console.error("Error fetching movies:", err);
+          this.error = "Failed to load movies. Please try again later.";
+          this.loading = false;
+        },
+      });
   }
   
   // Trigger search when user types
-   onSearchInput(): void {
-     this.searchTerms.next(this.searchQuery);
-   }
-   
-   // Clear search and return to default movie list
-   clearSearch(): void {
-     this.searchQuery = '';
-     this.isSearchMode = false;
-     this.loadMovies(1);
-   }
+    onSearchInput(): void {
+      this.searchTerms.next(this.searchQuery);
+    }
+    
+    // Clear search and return to default movie list
+    clearSearch(): void {
+      this.searchQuery = '';
+      this.isSearchMode = false;
+      this.loadMovies(1);
+    }
 
   previousPage(): void {
     if (this.currentPage > 1) {
@@ -129,17 +159,17 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   // Helper function to use in the template
   getPosterUrl(posterPath: string | null): string {
-    const baseUrl = 'https://image.tmdb.org/t/p/w500'; // TMDB base URL for images
+    const baseUrl = "https://image.tmdb.org/t/p/w500"; // TMDB base URL for images
     return posterPath
       ? `${baseUrl}${posterPath}`
-      : 'assets/images/placeholder.png';
+      : "assets/images/placeholder.png";
   }
 
   handleImageError(event: Event): void {
     const element = event.target as HTMLImageElement;
     if (element) {
       // Set the path to your actual placeholder image
-      element.src = 'assets/images/placeholder.png'; // Make sure this path is correct!
+      element.src = "assets/images/placeholder.png"; // Make sure this path is correct!
     }
   }
   onSearch(): void {
@@ -154,13 +184,10 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   toggleWatchlist(movie: Movie): void {
-    movie.inWatchlist = !movie.inWatchlist; // Toggle the watchlist status
-    // TODO: Add logic here to PERSIST this change!
-    // e.g., save the movie ID and its watchlist status to localStorage
-    // or call a backend service. This toggle is currently only in memory
-    // and will be lost on page reload or component re-initialization.
-    console.log(
-      `${movie.title} has been ${movie.inWatchlist ? 'added to' : 'removed from'} the watchlist.`,
-    );
+    this.wishlistService.toggleWishlist(movie);
+    movie.inWatchlist = this.wishlistService.isInWishlist(movie.id);
+  }
+  isInWishlist(id: number): boolean {
+    return this.wishlistService.isInWishlist(id);
   }
 }

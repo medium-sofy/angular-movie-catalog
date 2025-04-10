@@ -1,6 +1,8 @@
 import { CommonModule } from '@angular/common';
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { WishlistService } from '../../services/wishlist.service';
+
 
 @Component({
   selector: 'app-movie-card',
@@ -12,6 +14,7 @@ export class MovieCardComponent {
   @Input() movie: any;
   @Input() showLink: boolean = true; // Whether to show as a link to detail page
   @Output() watchlistToggle = new EventEmitter<any>();
+  constructor(private wishlistService: WishlistService) {}
 
   /**
    * Constructs the poster URL from a path
@@ -36,6 +39,11 @@ export class MovieCardComponent {
     event.stopPropagation();
     
     this.watchlistToggle.emit(this.movie);
+  }
+  ngOnChanges() {
+    if (this.movie) {
+      this.movie.inWatchlist = this.wishlistService.isInWishlist(this.movie.id);
+    }
   }
 
   /**

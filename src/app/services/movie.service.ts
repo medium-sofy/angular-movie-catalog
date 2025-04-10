@@ -21,10 +21,10 @@ export class MovieService {
    * @param page The page number to fetch.
    * @returns Observable<ApiResponse<Movie>>
    */
-  getMovies(page: number = 1): Observable<ApiResponse<Movie>> {
+  getMovies(page: number = 1, language: string = 'en-US'): Observable<ApiResponse<Movie>> {
     const params = new HttpParams()
       .set('api_key', this.apiKey)
-      .set('language', 'en-US') // Optional: set language
+      .set('language', language) // Optional: set language
       .set('sort_by', 'popularity.desc') // Optional: sort criteria
       .set('include_adult', 'false') // Optional: filter adult content
       .set('include_video', 'false') // Optional: filter videos

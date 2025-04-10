@@ -1,98 +1,72 @@
 <div class="home-container">
+  <h1>Popular Movies</h1>
 
-    <!-- <h1>Popular Movies</h1> -->
+  <!-- Search Bar -->
+  <div class="search-bar">
+    <input
+      type="text"
+      placeholder="Search for movies..."
+      [(ngModel)]="searchQuery"
+      (input)="onSearchInput()"
+      aria-label="Search for movies"
+    />
+    <button
+      class="btn btn-outline-secondary"
+      type="button"
+      *ngIf="searchQuery"
+      (click)="clearSearch()"
+    >
+      <i class="bi bi-x">Clear search</i>
+    </button>
+  </div>
+  @if (isSearchMode) {
+    <h2 class="search-results-title">
+      Search Results{{ searchQuery ? ' for "' + searchQuery + '"' : "" }}
+      <span class="results-count">({{ totalResults }} results)</span>
+    </h2>
+  }
+  <div *ngIf="loading" class="loading-indicator">Loading movies...</div>
 
-    <!-- Search Bar -->
-    <div class="search-container">
-      <div class="input-group">
-        <input 
-          type="text" 
-          class="form-control" 
-          placeholder="Search for movies..." 
-          [(ngModel)]="searchQuery" 
-          (input)="onSearchInput()"
-          aria-label="Search for movies">
-        
-        <button class="btn btn-outline-secondary" 
-                type="button" 
-                *ngIf="searchQuery" 
-                (click)="clearSearch()">
-          <i class="bi bi-x">Clear search</i>
-        </button>
-        
-        <!-- <button class="btn btn-primary" type="button">
-          <i class="bi bi-search">Search</i>
-        </button> -->
-      </div>
-    </div>
+  <div *ngIf="error && !loading" class="error-message">
+    {{ error }}
+  </div>
 
-    @if (isSearchMode) {
-      <h2 class="search-results-title">
-        Search Results{{ searchQuery ? ' for "' + searchQuery + '"' : '' }}
-        <span class="results-count">({{ totalResults }} results)</span>
-      </h2>
-    } @else {
-      <h2 class="section-title">Popular Movies</h2>
-    }
-    
-    <!-- Loading Indicator -->
-    @if (loading) {
-      <div class="loading-indicator">
-        <div class="spinner-border text-primary" role="status">
-          <span class="visually-hidden">Loading...</span>
-        </div>
-        <p>Loading movies...</p>
-      </div>
-    }
+  <div *ngIf="!loading && !error && movies.length > 0" class="movie-grid">
+    <app-movie-card
+      *ngFor="let movie of movies"
+      [movie]="movie"
+      (watchlistToggle)="toggleWatchlist($event)"
+    >
+    </app-movie-card>
+  </div>
 
-    @if (error) {
-      <div class="alert alert-danger" role="alert">
-        {{ error }}
-      </div>
-    }
-    <!-- Movie Grid -->
-    @if (!loading && !error && movies.length > 0) {
-      <div class="movie-grid">
-        @for (movie of movies; track movie.id) {
-          <app-movie-card 
-            [movie]="movie" 
-            (watchlistToggle)="toggleWatchlist($event)">
-          </app-movie-card>
-        }
-      </div>
-      <!-- Pagination -->
-        <div class="pagination-container">
-          <button 
-            class="btn btn-outline-primary" 
-            [disabled]="currentPage === 1" 
-            (click)="previousPage()">
-            <i class="bi bi-chevron-left"></i> Previous
-          </button>
-          
-          <span class="pagination-info">
-            Page {{ currentPage }} of {{ totalPages }}
-          </span>
-          
-          <button 
-            class="btn btn-outline-primary" 
-            [disabled]="currentPage === totalPages" 
-            (click)="nextPage()">
-            Next <i class="bi bi-chevron-right"></i>
-          </button>
-        </div>
-      } 
+  <div *ngIf="!loading && !error && movies.length === 0">
+    <p>No movies found.</p>
+  </div>
 
-      <!-- No Results Message -->
-      @if (!loading && !error && movies.length === 0) {
-        <div class="no-results">
-          <i class="bi bi-film large-icon"></i>
-          <h3>No movies found</h3>
-          <p>Try adjusting your search criteria</p>
-          @if (isSearchMode) {
-            <button class="btn btn-primary" (click)="clearSearch()">
-              View All Movies
-            </button>
-          }
-        </div>
-      }
+  <!-- Pagination Controls -->
+  <div *ngIf="!loading && !error && totalPages > 0" class="pagination-controls">
+    <button
+      [disabled]="currentPage <= 1 || loading"
+      (click)="previousPage()"
+      aria-label="Go to previous page"
+    >
+      &laquo; Previous
+    </button>
+
+    <span> Page {{ currentPage }} of {{ totalPages }} </span>
+
+    <button
+      [disabled]="currentPage >= totalPages || loading"
+      (click)="nextPage()"
+      aria-label="Go to next page"
+    >
+      Next &raquo;
+    </button>
+  </div>
+
+  <div *ngIf="!loading && !error && totalResults > 0" class="total-results">
+    Total Results: {{ totalResults }} (Displaying up to 500 pages)
+  </div>
 </div>
+
